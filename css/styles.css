@@ -1,0 +1,175 @@
+/* =========================
+   VARIABLES
+========================= */
+:root{
+  --bg:#141414;
+  --card:#1f1f1f;
+  --accent:#e50914;
+  --text:#e6e6e6;
+}
+
+/* =========================
+   RESET / BASE
+========================= */
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  background:linear-gradient(180deg,#141414 0%, #0f0f0f 100%);
+  color:var(--text);
+}
+
+/* =========================
+   HEADER / NAVBAR
+========================= */
+.topbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:12px 24px;
+  background:rgba(0,0,0,0.6);
+  position:sticky;
+  top:0;
+  z-index:10;
+}
+
+.brand{
+  font-weight:700;
+  font-size:1.4rem;
+  color:var(--accent);
+  text-decoration:none;
+  cursor:pointer;
+}
+
+.main-nav .nav-link{
+  color:var(--text);
+  margin-left:18px;
+  text-decoration:none;
+  opacity:0.9;
+}
+
+/* =========================
+   HERO
+========================= */
+#hero{
+  height:250px;
+  background:linear-gradient(90deg, rgba(0,0,0,0.6), transparent),
+             url('/img/hero.jpg') center/cover no-repeat;
+  display:flex;
+  align-items:flex-end;
+  padding:24px;
+}
+
+/* =========================
+   LAYOUT PRINCIPAL
+========================= */
+#center{
+  padding:20px 24px;
+}
+
+/* =========================
+   CATEGORÍAS
+========================= */
+.category-card{
+  margin-bottom:28px;
+}
+
+.category-title{
+  margin:0 0 8px 0;
+  font-size:1.1rem;
+  color:#fff;
+  cursor:pointer;
+}
+
+.category-row{
+  display:flex;
+  gap:12px;
+  overflow-x:auto;
+  padding-bottom:6px;
+}
+
+/* Ocultar filas en vista home */
+#categories-home .category-row{
+  display:none;
+}
+
+/* =========================
+   TARJETAS DE PRODUCTO
+========================= */
+.prod-card{
+  min-width:150px;
+  background:var(--card);
+  border-radius:6px;
+  overflow:hidden;
+  cursor:pointer;
+  transition:transform .15s ease;
+}
+
+.prod-card img{
+  width:100%;
+  height:200px;
+  object-fit:cover;
+  display:block;
+}
+
+.prod-card .meta{
+  padding:8px;
+  font-size:0.9rem;
+}
+
+.prod-card:hover{
+  transform:translateY(-6px);
+}
+
+/* =========================
+   DETALLE
+========================= */
+.detail{
+  background:linear-gradient(180deg, rgba(0,0,0,0.6), transparent);
+  padding:18px;
+  border-radius:8px;
+}
+
+.link{
+  color:var(--accent);
+  cursor:pointer;
+  text-decoration:underline;
+}
+
+/* =========================
+   CATEGORÍA SELECCIONADA
+========================= */
+.category-selected{
+  padding:20px;
+}
+
+.selected-category-title{
+  margin:0 0 12px 0;
+  font-size:1.6rem;
+  color:#fff;
+}
+
+.selected-row{
+  gap:14px;
+  overflow-x:auto;
+  padding-bottom:6px;
+}
+
+/* =========================
+   INTERACCIONES / UX
+========================= */
+.category-link,
+.categories-menu a,
+.nav-link.category-link{
+  cursor:pointer;
+}
+
+.category-title:hover,
+.category-link:hover,
+.brand:hover{
+  opacity:0.9;
+  text-decoration:none;
+}
