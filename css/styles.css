@@ -1,175 +1,246 @@
 /* =========================
    VARIABLES
 ========================= */
-:root{
-  --bg:#141414;
-  --card:#1f1f1f;
-  --accent:#e50914;
-  --text:#e6e6e6;
+:root {
+  --bg: #141414;
+  --bg-alt: #0f0f0f;
+  --card: #1f1f1f;
+  --accent: #e50914;
+  --text: #e6e6e6;
+  --text-muted: #b3b3b3;
+  --radius: 6px;
 }
 
 /* =========================
    RESET / BASE
 ========================= */
-*{
-  box-sizing:border-box;
+* {
+  box-sizing: border-box;
 }
 
-body{
-  margin:0;
+body {
+  margin: 0;
   font-family: "Helvetica Neue", Arial, sans-serif;
-  background:linear-gradient(180deg,#141414 0%, #0f0f0f 100%);
-  color:var(--text);
+  background: linear-gradient(180deg, var(--bg) 0%, var(--bg-alt) 100%);
+  color: var(--text);
 }
 
 /* =========================
    HEADER / NAVBAR
 ========================= */
-.topbar{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:12px 24px;
-  background:rgba(0,0,0,0.6);
-  position:sticky;
-  top:0;
-  z-index:10;
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 24px;
+  background: rgba(0, 0, 0, 0.65);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  backdrop-filter: blur(6px);
 }
 
-.brand{
-  font-weight:700;
-  font-size:1.4rem;
-  color:var(--accent);
-  text-decoration:none;
-  cursor:pointer;
+.brand {
+  font-weight: 700;
+  font-size: 1.4rem;
+  color: var(--accent);
+  text-decoration: none;
+  cursor: pointer;
 }
 
-.main-nav .nav-link{
-  color:var(--text);
-  margin-left:18px;
-  text-decoration:none;
-  opacity:0.9;
+.main-nav .nav-link {
+  color: var(--text);
+  margin-left: 18px;
+  text-decoration: none;
+  opacity: 0.9;
+  transition: opacity 0.2s ease;
 }
 
-/* =========================
-   HERO
-========================= */
-#hero{
-  height:250px;
-  background:linear-gradient(90deg, rgba(0,0,0,0.6), transparent),
-             url('/img/hero.jpg') center/cover no-repeat;
-  display:flex;
-  align-items:flex-end;
-  padding:24px;
+.main-nav .nav-link:hover {
+  opacity: 1;
 }
 
 /* =========================
    LAYOUT PRINCIPAL
 ========================= */
-#center{
-  padding:20px 24px;
+#center {
+  padding: 20px 24px;
 }
 
 /* =========================
    CATEGORÍAS
 ========================= */
-.category-card{
-  margin-bottom:28px;
+.category-card {
+  margin-bottom: 28px;
 }
 
-.category-title{
-  margin:0 0 8px 0;
-  font-size:1.1rem;
-  color:#fff;
-  cursor:pointer;
+.category-title {
+  margin: 0 0 8px 0;
+  font-size: 1.2rem;
+  color: #fff;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
 }
 
-.category-row{
-  display:flex;
-  gap:12px;
-  overflow-x:auto;
-  padding-bottom:6px;
+.category-title:hover {
+  opacity: 0.8;
+}
+
+.category-row {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+  scroll-snap-type: x mandatory;
+}
+
+.category-row::-webkit-scrollbar {
+  height: 6px;
+}
+
+.category-row::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 4px;
 }
 
 /* Ocultar filas en vista home */
-#categories-home .category-row{
-  display:none;
+#categories-home .category-row {
+  display: none;
 }
 
 /* =========================
-   TARJETAS DE PRODUCTO
+   TARJETAS DE PRODUCCIÓN
 ========================= */
-.prod-card{
-  min-width:150px;
-  background:var(--card);
-  border-radius:6px;
-  overflow:hidden;
-  cursor:pointer;
-  transition:transform .15s ease;
+.prod-card {
+  min-width: 150px;
+  background: var(--card);
+  border-radius: var(--radius);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+  scroll-snap-align: start;
 }
 
-.prod-card img{
-  width:100%;
-  height:200px;
-  object-fit:cover;
-  display:block;
+.prod-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  display: block;
 }
 
-.prod-card .meta{
-  padding:8px;
-  font-size:0.9rem;
+.prod-card .meta {
+  padding: 8px;
+  font-size: 0.9rem;
+  color: var(--text-muted);
 }
 
-.prod-card:hover{
-  transform:translateY(-6px);
+.prod-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.4);
 }
 
 /* =========================
    DETALLE
 ========================= */
-.detail{
-  background:linear-gradient(180deg, rgba(0,0,0,0.6), transparent);
-  padding:18px;
-  border-radius:8px;
+.detail {
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.6), transparent);
+  padding: 18px;
+  border-radius: 8px;
 }
 
-.link{
-  color:var(--accent);
-  cursor:pointer;
-  text-decoration:underline;
+.detail h2 {
+  margin-top: 0;
+}
+
+.link {
+  color: var(--accent);
+  cursor: pointer;
+  text-decoration: underline;
 }
 
 /* =========================
    CATEGORÍA SELECCIONADA
 ========================= */
-.category-selected{
-  padding:20px;
+.category-selected {
+  padding: 20px;
 }
 
-.selected-category-title{
-  margin:0 0 12px 0;
-  font-size:1.6rem;
-  color:#fff;
+.selected-category-title {
+  margin: 0 0 12px 0;
+  font-size: 1.6rem;
+  color: #fff;
 }
 
-.selected-row{
-  gap:14px;
-  overflow-x:auto;
-  padding-bottom:6px;
+.selected-row {
+  gap: 14px;
+  overflow-x: auto;
+  padding-bottom: 6px;
 }
 
 /* =========================
-   INTERACCIONES / UX
+   FORMULARIOS (UT06)
 ========================= */
-.category-link,
-.categories-menu a,
-.nav-link.category-link{
-  cursor:pointer;
+form {
+  background: var(--card);
+  padding: 20px;
+  border-radius: var(--radius);
+  max-width: 500px;
 }
 
-.category-title:hover,
-.category-link:hover,
-.brand:hover{
-  opacity:0.9;
-  text-decoration:none;
+form label {
+  display: block;
+  margin-top: 12px;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+form input,
+form select {
+  width: 100%;
+  padding: 8px;
+  margin-top: 6px;
+  border-radius: var(--radius);
+  border: 1px solid #333;
+  background: #0d0d0d;
+  color: var(--text);
+}
+
+form button {
+  margin-top: 18px;
+  padding: 10px 14px;
+  background: var(--accent);
+  border: none;
+  border-radius: var(--radius);
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.2s ease;
+}
+
+form button:hover {
+  background: #b20710;
+}
+
+#form-msg {
+  margin-top: 12px;
+  font-weight: bold;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+@media (max-width: 768px) {
+  .topbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .main-nav .nav-link {
+    margin-left: 0;
+    margin-right: 12px;
+  }
+
+  .prod-card {
+    min-width: 130px;
+  }
 }

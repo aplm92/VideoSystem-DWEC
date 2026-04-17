@@ -1,39 +1,74 @@
 "use strict";
 
+import { VideoSystemException } from "../exceptions/VideoSystemException.js";
+
 export class Coordinate {
+
   #latitude;
   #longitude;
 
   constructor(latitude, longitude) {
-    if (typeof latitude !== "number" || latitude < -90 || latitude > 90)
-      throw new Error("Invalid latitude");
 
-    if (typeof longitude !== "number" || longitude < -180 || longitude > 180)
-      throw new Error("Invalid longitude");
+    if (!Coordinate.#isValidLatitude(latitude))
+      throw VideoSystemException.INVALID_VALUE;
 
-    this.#latitude = latitude;
-    this.#longitude = longitude;
+    if (!Coordinate.#isValidLongitude(longitude))
+      throw VideoSystemException.INVALID_VALUE;
+
+    this.#latitude = Number(latitude);
+    this.#longitude = Number(longitude);
   }
 
-  get latitude() {
-    return this.#latitude;
-  }
+  /* ============================
+     GETTERS
+  ============================ */
+
+  get latitude() { return this.#latitude; }
+  get longitude() { return this.#longitude; }
+
+  /* ============================
+     SETTERS
+  ============================ */
 
   set latitude(value) {
-    if (typeof value !== "number" || value < -90 || value > 90)
-      throw new Error("Invalid latitude");
-    this.#latitude = value;
-  }
+    if (!Coordinate.#isValidLatitude(value))
+      throw VideoSystemException.INVALID_VALUE;
 
-  get longitude() {
-    return this.#longitude;
+    this.#latitude = Number(value);
   }
 
   set longitude(value) {
-    if (typeof value !== "number" || value < -180 || value > 180)
-      throw new Error("Invalid longitude");
-    this.#longitude = value;
+    if (!Coordinate.#isValidLongitude(value))
+      throw VideoSystemException.INVALID_VALUE;
+
+    this.#longitude = Number(value);
   }
+
+  /* ============================
+     VALIDACIONES PRIVADAS
+  ============================ */
+
+  static #isValidLatitude(value) {
+    return (
+      typeof value === "number" &&
+      !isNaN(value) &&
+      value >= -90 &&
+      value <= 90
+    );
+  }
+
+  static #isValidLongitude(value) {
+    return (
+      typeof value === "number" &&
+      !isNaN(value) &&
+      value >= -180 &&
+      value <= 180
+    );
+  }
+
+  /* ============================
+     MÉTODOS
+  ============================ */
 
   toString() {
     return `(${this.#latitude}, ${this.#longitude})`;

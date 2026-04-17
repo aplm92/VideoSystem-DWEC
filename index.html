@@ -3,24 +3,32 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>VideoSystem — Practica UT05</title>
+  <title>VideoSystem — Práctica UT06</title>
   <link rel="stylesheet" href="css/styles.css" />
 </head>
+
 <body>
   <header class="topbar">
-  <a href="#" data-route="home" class="brand nav-link">VideoSystem</a>
+    <a href="#" data-route="home" class="brand nav-link">VideoSystem</a>
 
-  <nav class="main-nav" id="main-nav">
-    <a href="#" data-route="home" class="nav-link">Inicio</a>
-    <a href="#" data-route="actors" class="nav-link">Actores</a>
-    <a href="#" data-route="directors" class="nav-link">Directores</a>
-    <a href="#" id="close-windows" class="nav-link">Cerrar ventanas</a>
-    <hr>
-    <div class="categories-menu">Categorias: </div>
-    <div id="categories-menu" class="categories-menu"></div>
-  </nav>
-</header>
+    <nav class="main-nav" id="main-nav">
+      <a href="#" data-route="home" class="nav-link">Inicio</a>
+      <a href="#" data-route="actors" class="nav-link">Actores</a>
+      <a href="#" data-route="directors" class="nav-link">Directores</a>
+      <a href="#" id="close-windows" class="nav-link">Cerrar ventanas</a>
 
+      <hr>
+
+      <div class="categories-menu">Categorías:</div>
+      <div id="categories-menu" class="categories-menu"></div>
+
+      <hr>
+
+      <a href="#" class="nav-link" data-route="create-production">Nueva producción</a>
+      <a href="#" class="nav-link" data-route="delete-production">Eliminar producción</a>
+      <a href="#" class="nav-link" data-route="assign">Asignar / Desasignar</a>
+    </nav>
+  </header>
 
   <main id="app">
     <section id="categories-home" class="categories-home"></section>

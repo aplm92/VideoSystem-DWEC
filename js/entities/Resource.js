@@ -1,38 +1,71 @@
 "use strict";
 
+import { VideoSystemException } from "../exceptions/VideoSystemException.js";
+
 export class Resource {
+
   #duration;
   #link;
 
   constructor(duration, link) {
-    if (typeof duration !== "number" || duration <= 0)
-      throw new Error("Invalid duration");
 
-    if (!link || typeof link !== "string")
-      throw new Error("Invalid resource link");
+    if (!Resource.#isValidDuration(duration))
+      throw VideoSystemException.INVALID_VALUE;
 
-    this.#duration = duration;
-    this.#link = link;
+    if (!Resource.#isValidLink(link))
+      throw VideoSystemException.INVALID_VALUE;
+
+    this.#duration = Number(duration);
+    this.#link = link.trim();
   }
 
-  get duration() {
-    return this.#duration;
-  }
+  /* ============================
+     GETTERS
+  ============================ */
+
+  get duration() { return this.#duration; }
+  get link() { return this.#link; }
+
+  /* ============================
+     SETTERS
+  ============================ */
 
   set duration(value) {
-    if (typeof value !== "number" || value <= 0)
-      throw new Error("Invalid duration");
-    this.#duration = value;
-  }
+    if (!Resource.#isValidDuration(value))
+      throw VideoSystemException.INVALID_VALUE;
 
-  get link() {
-    return this.#link;
+    this.#duration = Number(value);
   }
 
   set link(value) {
-    if (!value) throw new Error("Invalid resource link");
-    this.#link = value;
+    if (!Resource.#isValidLink(value))
+      throw VideoSystemException.INVALID_VALUE;
+
+    this.#link = value.trim();
   }
+
+  /* ============================
+     VALIDACIONES PRIVADAS
+  ============================ */
+
+  static #isValidDuration(value) {
+    return (
+      typeof value === "number" &&
+      !isNaN(value) &&
+      value > 0
+    );
+  }
+
+  static #isValidLink(value) {
+    return (
+      typeof value === "string" &&
+      value.trim().length > 0
+    );
+  }
+
+  /* ============================
+     MÉTODOS
+  ============================ */
 
   toString() {
     return `${this.#duration} min`;

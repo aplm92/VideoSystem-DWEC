@@ -28,7 +28,6 @@ function testVideoSystem() {
   const u1 = new User("juan", "juan@mail.com", "123456");
   const u2 = new User("ana", "ana@mail.com", "abcdef");
 
-
   vs1.addUser(u1, u2);
 
   console.log("Usuarios registrados:");
@@ -53,8 +52,11 @@ function testVideoSystem() {
   const r2 = new Resource(45, "/lost_s01e01.mp4");
 
   const matrix = new Movie("Matrix", new Date(1999, 2, 31), r1);
+  matrix.addLocation("Los Ángeles");
+
   const lost = new Serie("Lost", new Date(2004, 8, 22), 6);
-  lost.resources.push(r2);
+  lost.addResource(r2);
+  lost.addLocation("Hawái");
 
   vs1.addProduction(matrix, lost);
 
@@ -134,6 +136,13 @@ function testVideoSystem() {
   for (const d of vs1.directors)
     console.log(" -", d.toString());
 
+  console.log("Eliminando producción Lost...");
+  vs1.removeProduction(lost);
+
+  console.log("Producciones tras eliminar Lost:");
+  for (const p of vs1.productions)
+    console.log(" -", p.title);
+
   /* ===================== EXCEPTIONS ===================== */
   console.log("\n--- EXCEPTIONS (CONTROLADAS) ---");
 
@@ -153,6 +162,12 @@ function testVideoSystem() {
     vs1.assignCategory("NoCategory", matrix);
   } catch (e) {
     console.log("Excepción correcta por categoría inválida");
+  }
+
+  try {
+    new Production("Nope", new Date());
+  } catch (e) {
+    console.log("Excepción correcta: Production es abstracta");
   }
 
   console.log("\n========== FIN TEST ==========");

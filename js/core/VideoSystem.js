@@ -19,7 +19,7 @@ export class VideoSystem {
 
   #name;
 
-  // Almacenamiento principal (estado del sistema)
+  // Almacenamiento principal
   #users = [];
   #productions = [];
   #categories = [];
@@ -60,7 +60,6 @@ export class VideoSystem {
   get directors() { return this.#directors.values(); }
 
   /* ===================== FLYWEIGHT GETTERS ===================== */
-  /* Permiten recuperar instancias únicas (clave para Interfaz Grafica) */
 
   createCategory(name, description = "") {
     let category = this.#categories.find(c => c.name === name);
@@ -71,26 +70,23 @@ export class VideoSystem {
     return category;
   }
 
-
   createProduction(title) {
     return this.#productions.find(p => p.title === title) ?? null;
   }
 
   createPerson(name, lastname1) {
-  return (
-    this.#actors.find(p => p.name === name && p.lastname1 === lastname1) ??
-    this.#directors.find(p => p.name === name && p.lastname1 === lastname1) ??
-    null
-  );
-}
-
+    return (
+      this.#actors.find(p => p.name === name && p.lastname1 === lastname1) ??
+      this.#directors.find(p => p.name === name && p.lastname1 === lastname1) ??
+      null
+    );
+  }
 
   /* ===================== USERS ===================== */
 
   addUser(...users) {
     for (const user of users) {
-      if (!(user instanceof User))
-        throw VideoSystemException.INVALID_VALUE;
+      if (!(user instanceof User)) throw VideoSystemException.INVALID_VALUE;
 
       if (this.#users.some(u => u.username === user.username))
         throw VideoSystemException.ALREADY_EXISTS;
@@ -129,8 +125,10 @@ export class VideoSystem {
   removeCategory(category) {
     const index = this.#categories.findIndex(c => c.name === category.name);
     if (index === -1) throw VideoSystemException.NOT_FOUND;
+
     this.#categoryProductions.delete(this.#categories[index]);
     this.#categories.splice(index, 1);
+
     return this.#categories.length;
   }
 
@@ -149,7 +147,43 @@ export class VideoSystem {
     return this.#productions.length;
   }
 
-  /* ===================== ACTORS / DIRECTORS ===================== */
+  /**
+   * Elimina una producción del sistema y todas sus relaciones.
+   * (Requisito UT06)
+   */
+  removeProduction(production) {
+    if (!(production instanceof Production))
+      throw VideoSystemException.INVALID_VALUE;
+
+    const index = this.#productions.findIndex(p => p.title === production.title);
+    if (index === -1)
+      throw VideoSystemException.NOT_FOUND;
+
+    // 1. Eliminar de categorías
+    for (const [cat, list] of this.#categoryProductions.entries()) {
+      const i = list.findIndex(p => p.title === production.title);
+      if (i !== -1) list.splice(i, 1);
+    }
+
+    // 2. Eliminar de actores
+    for (const [actor, roles] of this.#actorProductions.entries()) {
+      const i = roles.findIndex(r => r.production.title === production.title);
+      if (i !== -1) roles.splice(i, 1);
+    }
+
+    // 3. Eliminar de directores
+    for (const [director, list] of this.#directorProductions.entries()) {
+      const i = list.findIndex(p => p.title === production.title);
+      if (i !== -1) list.splice(i, 1);
+    }
+
+    // 4. Eliminar de la lista principal
+    this.#productions.splice(index, 1);
+
+    return this.#productions.length;
+  }
+
+  /* ===================== ACTORS ===================== */
 
   addActor(...actors) {
     for (const actor of actors) {
@@ -165,30 +199,24 @@ export class VideoSystem {
     return this.#actors.length;
   }
 
-  /**
- * Elimina un actor del sistema y todas sus relaciones
- * con las producciones en las que participa.
- */
-removeActor(actor) {
-  if (!(actor instanceof Person))
-    throw VideoSystemException.INVALID_VALUE;
+  removeActor(actor) {
+    if (!(actor instanceof Person))
+      throw VideoSystemException.INVALID_VALUE;
 
-  const index = this.#actors.findIndex(
-    a => a.name === actor.name && a.lastname1 === actor.lastname1
-  );
+    const index = this.#actors.findIndex(
+      a => a.name === actor.name && a.lastname1 === actor.lastname1
+    );
 
-  if (index === -1)
-    throw VideoSystemException.NOT_FOUND;
+    if (index === -1)
+      throw VideoSystemException.NOT_FOUND;
 
-  // Eliminamos relaciones actor-producción
-  this.#actorProductions.delete(this.#actors[index]);
+    this.#actorProductions.delete(this.#actors[index]);
+    this.#actors.splice(index, 1);
 
-  // Eliminamos el actor del sistema
-  this.#actors.splice(index, 1);
+    return this.#actors.length;
+  }
 
-  return this.#actors.length;
-}
-
+  /* ===================== DIRECTORS ===================== */
 
   addDirector(...directors) {
     for (const director of directors) {
@@ -204,37 +232,25 @@ removeActor(actor) {
     return this.#directors.length;
   }
 
-  /**
- * Elimina un director del sistema y todas sus relaciones
- * con las producciones que dirige.
- */
-removeDirector(director) {
-  if (!(director instanceof Person))
-    throw VideoSystemException.INVALID_VALUE;
+  removeDirector(director) {
+    if (!(director instanceof Person))
+      throw VideoSystemException.INVALID_VALUE;
 
-  const index = this.#directors.findIndex(
-    d => d.name === director.name && d.lastname1 === director.lastname1
-  );
+    const index = this.#directors.findIndex(
+      d => d.name === director.name && d.lastname1 === director.lastname1
+    );
 
-  if (index === -1)
-    throw VideoSystemException.NOT_FOUND;
+    if (index === -1)
+      throw VideoSystemException.NOT_FOUND;
 
-  // Eliminamos relaciones director-producción
-  this.#directorProductions.delete(this.#directors[index]);
+    this.#directorProductions.delete(this.#directors[index]);
+    this.#directors.splice(index, 1);
 
-  // Eliminamos el director del sistema
-  this.#directors.splice(index, 1);
-
-  return this.#directors.length;
-}
-
+    return this.#directors.length;
+  }
 
   /* ===================== ASSIGN / DEASSIGN ===================== */
 
-  /**
-   * Asigna una o más producciones a una categoría.
-   * Si no existen en el sistema, se añaden.
-   */
   assignCategory(category, ...productions) {
     if (!(category instanceof Category))
       throw VideoSystemException.INVALID_VALUE;
@@ -254,105 +270,76 @@ removeDirector(director) {
     return list.length;
   }
 
-  /* ===================== ACTORS ===================== */
-/**
- * Asigna un actor a una producción con un rol determinado.
- * Si el actor o la producción no existen, se añaden al sistema.
- */
-assignActor(actor, production, role = "") {
-  if (!(actor instanceof Person) || !(production instanceof Production))
-    throw VideoSystemException.INVALID_VALUE;
-
-  // Flyweight: asegurar actor
-  if (!this.#actorProductions.has(actor)) {
-    this.addActor(actor);
-  }
-
-  // Flyweight: asegurar producción
-  if (!this.#productions.some(p => p.title === production.title)) {
-    this.addProduction(production);
-  }
-
-  const list = this.#actorProductions.get(actor);
-
-  // Evitar duplicados
-  if (!list.some(obj => obj.production.title === production.title)) {
-    list.push({ production, role });
-  }
-
-  return list.length;
-}
-
-/**
- * Elimina la relación entre un actor y una producción.
- */
-deassignActor(actor, production) {
-  if (!(actor instanceof Person) || !(production instanceof Production))
-    throw VideoSystemException.INVALID_VALUE;
-
-  const list = this.#actorProductions.get(actor);
-  if (!list) throw VideoSystemException.NOT_FOUND;
-
-  const index = list.findIndex(
-    obj => obj.production.title === production.title
-  );
-
-  if (index !== -1) list.splice(index, 1);
-
-  return list.length;
-}
-
-
-  /* ===================== DIRECTORS ===================== */
-/*
- * Asigna una o más producciones a un director.
- * Si el director o la producción no existen, se añaden al sistema.
- */
-assignDirector(director, ...productions) {
-  if (!(director instanceof Person))
-    throw VideoSystemException.INVALID_VALUE;
-
-  // Flyweight: aseguramos existencia del director
-  if (!this.#directorProductions.has(director)) {
-    this.addDirector(director);
-  }
-
-  const list = this.#directorProductions.get(director);
-
-  for (const prod of productions) {
-    if (!(prod instanceof Production))
+  assignActor(actor, production, role = "") {
+    if (!(actor instanceof Person) || !(production instanceof Production))
       throw VideoSystemException.INVALID_VALUE;
 
-    if (!this.#productions.includes(prod))
-      this.addProduction(prod);
+    if (!this.#actorProductions.has(actor))
+      this.addActor(actor);
 
-    if (!list.some(p => p.title === prod.title))
-      list.push(prod);
+    if (!this.#productions.some(p => p.title === production.title))
+      this.addProduction(production);
+
+    const list = this.#actorProductions.get(actor);
+
+    if (!list.some(obj => obj.production.title === production.title))
+      list.push({ production, role });
+
+    return list.length;
   }
 
-  return list.length;
-}
+  deassignActor(actor, production) {
+    if (!(actor instanceof Person) || !(production instanceof Production))
+      throw VideoSystemException.INVALID_VALUE;
 
-/**
- * Desasigna una o más producciones de un director.
- */
-deassignDirector(director, ...productions) {
-  if (!(director instanceof Person))
-    throw VideoSystemException.INVALID_VALUE;
+    const list = this.#actorProductions.get(actor);
+    if (!list) throw VideoSystemException.NOT_FOUND;
 
-  const list = this.#directorProductions.get(director);
-  if (!list) throw VideoSystemException.NOT_FOUND;
-
-  for (const prod of productions) {
-    const index = list.findIndex(p => p.title === prod.title);
+    const index = list.findIndex(obj => obj.production.title === production.title);
     if (index !== -1) list.splice(index, 1);
+
+    return list.length;
   }
 
-  return list.length;
-}
+  assignDirector(director, ...productions) {
+    if (!(director instanceof Person))
+      throw VideoSystemException.INVALID_VALUE;
 
+    if (!this.#directorProductions.has(director))
+      this.addDirector(director);
 
-  /* ===================== CONSULTAS (GENERADORES) ===================== */
+    const list = this.#directorProductions.get(director);
+
+    for (const prod of productions) {
+      if (!(prod instanceof Production))
+        throw VideoSystemException.INVALID_VALUE;
+
+      if (!this.#productions.includes(prod))
+        this.addProduction(prod);
+
+      if (!list.some(p => p.title === prod.title))
+        list.push(prod);
+    }
+
+    return list.length;
+  }
+
+  deassignDirector(director, ...productions) {
+    if (!(director instanceof Person))
+      throw VideoSystemException.INVALID_VALUE;
+
+    const list = this.#directorProductions.get(director);
+    if (!list) throw VideoSystemException.NOT_FOUND;
+
+    for (const prod of productions) {
+      const index = list.findIndex(p => p.title === prod.title);
+      if (index !== -1) list.splice(index, 1);
+    }
+
+    return list.length;
+  }
+
+  /* ===================== CONSULTAS ===================== */
 
   *getProductionsActor(actor) {
     if (!this.#actorProductions.has(actor))
@@ -390,7 +377,7 @@ deassignDirector(director, ...productions) {
     }
   }
 
-  /* ===================== FILTROS (GENERADORES) ===================== */
+  /* ===================== FILTROS ===================== */
 
   *findProductions(filterFn) {
     for (const prod of this.#productions) {
