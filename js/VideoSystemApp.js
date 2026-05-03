@@ -1,5 +1,5 @@
 /* ============================================================
-   VideoSystemApp.js — UT07 COMPLETO
+   VideoSystemApp.js — UT07
    Alberto Pérez López-Menchero
    Controlador principal de la aplicación.
 ============================================================ */

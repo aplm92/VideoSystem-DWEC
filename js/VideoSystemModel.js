@@ -1,5 +1,5 @@
 /* ============================================================
-   VideoSystemModel.js — UT07 COMPLETO
+   VideoSystemModel.js — UT07
    Alberto Pérez López-Menchero
    Gestión del modelo + carga inicial JSON + exportación backup
 ============================================================ */

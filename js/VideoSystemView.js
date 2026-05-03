@@ -1,5 +1,5 @@
 /* ============================================================
-   VideoSystemView.js — UT07 COMPLETO
+   VideoSystemView.js — UT07
    Alberto Pérez López-Menchero
    Renderizado del DOM, formularios, mapas y binds.
 ============================================================ */
