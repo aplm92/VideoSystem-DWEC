@@ -3,11 +3,51 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>VideoSystem — Práctica UT06</title>
+  <title>VideoSystem — Práctica UT07</title>
+
+  <!-- Estilos -->
   <link rel="stylesheet" href="css/styles.css" />
+
+  <!-- Leaflet -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+  <!-- Esri Geocoder -->
+  <script src="https://unpkg.com/esri-leaflet"></script>
+  <script src="https://unpkg.com/esri-leaflet-geocoder"></script>
+  <link rel="stylesheet" href="https://unpkg.com/esri-leaflet-geocoder/dist/esri-leaflet-geocoder.css" />
 </head>
 
 <body>
+
+  <!-- ============================
+       BANNER COOKIES
+  ============================ -->
+  <div id="cookie-banner" class="cookie-banner">
+    Esta web utiliza cookies para mejorar la experiencia.
+    <button id="accept-cookies">Aceptar</button>
+  </div>
+
+  <!-- ============================
+       LOGIN
+  ============================ -->
+  <div id="login-box" class="login-box">
+    <h3>Login</h3>
+    <form id="login-form">
+      <input type="text" id="login-user" placeholder="Usuario" required>
+      <input type="password" id="login-pass" placeholder="Contraseña" required>
+      <button type="submit">Entrar</button>
+    </form>
+  </div>
+
+  <!-- ============================
+       USUARIO LOGUEADO
+  ============================ -->
+  <div id="user-info" class="user-info"></div>
+
+  <!-- ============================
+       CABECERA Y MENÚ
+  ============================ -->
   <header class="topbar">
     <a href="#" data-route="home" class="brand nav-link">VideoSystem</a>
 
@@ -24,17 +64,35 @@
 
       <hr>
 
-      <a href="#" class="nav-link" data-route="create-production">Nueva producción</a>
-      <a href="#" class="nav-link" data-route="delete-production">Eliminar producción</a>
-      <a href="#" class="nav-link" data-route="assign">Asignar / Desasignar</a>
+      <!-- Opciones solo para admin -->
+      <div id="admin-options" style="display:none;">
+        <a href="#" class="nav-link" data-route="create-production">Nueva producción</a>
+        <a href="#" class="nav-link" data-route="delete-production">Eliminar producción</a>
+        <a href="#" class="nav-link" data-route="assign">Asignar / Desasignar</a>
+        <a href="#" class="nav-link" data-route="backup">Crear Backup</a>
+      </div>
+
+      <hr>
+
+      <!-- Favoritos -->
+      <a href="#" class="nav-link" data-route="favorites">Favoritos</a>
+
+      <!-- Mapa global -->
+      <a href="#" class="nav-link" data-route="map-all">Mapa Producciones</a>
     </nav>
   </header>
 
+  <!-- ============================
+       CONTENIDO PRINCIPAL
+  ============================ -->
   <main id="app">
     <section id="categories-home" class="categories-home"></section>
     <section id="center"></section>
   </main>
 
+  <!-- ============================
+       SCRIPT PRINCIPAL
+  ============================ -->
   <script type="module" src="js/VideoSystemApp.js"></script>
 </body>
 </html>

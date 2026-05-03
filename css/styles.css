@@ -6,241 +6,397 @@
   --bg-alt: #0f0f0f;
   --card: #1f1f1f;
   --accent: #e50914;
+  --accent-hover: #f40612;
   --text: #e6e6e6;
   --text-muted: #b3b3b3;
   --radius: 6px;
+  --shadow: 0 2px 8px rgba(0,0,0,0.6);
 }
 
-/* =========================
-   RESET / BASE
-========================= */
-* {
-  box-sizing: border-box;
-}
-
+/* ============================================
+   ESTILOS GENERALES
+============================================ */
 body {
   margin: 0;
-  font-family: "Helvetica Neue", Arial, sans-serif;
-  background: linear-gradient(180deg, var(--bg) 0%, var(--bg-alt) 100%);
+  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
   color: var(--text);
 }
 
-/* =========================
-   HEADER / NAVBAR
-========================= */
-.topbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 24px;
-  background: rgba(0, 0, 0, 0.65);
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  backdrop-filter: blur(6px);
+h1, h2, h3, h4 {
+  margin-top: 0;
+  color: var(--text);
 }
 
-.brand {
-  font-weight: 700;
-  font-size: 1.4rem;
-  color: var(--accent);
+a {
   text-decoration: none;
+  color: var(--text);
   cursor: pointer;
+}
+
+button {
+  cursor: pointer;
+  font-family: inherit;
+}
+
+/* ============================================
+   TOPBAR Y MENÚ
+============================================ */
+.topbar {
+  background: #000;
+  color: #fff;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  box-shadow: var(--shadow);
+}
+
+.topbar .brand {
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: var(--accent);
+  letter-spacing: 1px;
+}
+
+.main-nav {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex-wrap: wrap;
 }
 
 .main-nav .nav-link {
-  color: var(--text);
-  margin-left: 18px;
-  text-decoration: none;
-  opacity: 0.9;
-  transition: opacity 0.2s ease;
+  color: var(--text-muted);
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  transition: background 0.2s, color 0.2s;
 }
 
 .main-nav .nav-link:hover {
-  opacity: 1;
+  background: var(--accent);
+  color: #fff;
 }
 
-/* =========================
+.categories-menu {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+/* Separadores del menú */
+.main-nav hr {
+  border: none;
+  border-top: 1px solid #333;
+  width: 100%;
+}
+
+/* ============================================
    LAYOUT PRINCIPAL
-========================= */
-#center {
-  padding: 20px 24px;
+============================================ */
+#app {
+  padding: 20px;
 }
 
-/* =========================
-   CATEGORÍAS
-========================= */
+#categories-home {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+/* ============================================
+   TARJETAS DE CATEGORÍA
+============================================ */
 .category-card {
-  margin-bottom: 28px;
+  background: var(--card);
+  padding: 15px;
+  border-radius: var(--radius);
+  width: 300px;
+  box-shadow: var(--shadow);
+  color: var(--text);
 }
 
 .category-title {
-  margin: 0 0 8px 0;
-  font-size: 1.2rem;
-  color: #fff;
+  margin-bottom: 10px;
   cursor: pointer;
-  transition: opacity 0.2s ease;
+  font-size: 1.1rem;
 }
 
-.category-title:hover {
-  opacity: 0.8;
-}
-
+/* Fila de producciones dentro de categoría */
 .category-row {
   display: flex;
-  gap: 12px;
-  overflow-x: auto;
-  padding-bottom: 6px;
-  scroll-snap-type: x mandatory;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
-.category-row::-webkit-scrollbar {
-  height: 6px;
-}
-
-.category-row::-webkit-scrollbar-thumb {
-  background: #333;
-  border-radius: 4px;
-}
-
-/* Ocultar filas en vista home */
-#categories-home .category-row {
-  display: none;
-}
-
-/* =========================
+/* ============================================
    TARJETAS DE PRODUCCIÓN
-========================= */
+============================================ */
 .prod-card {
-  min-width: 150px;
-  background: var(--card);
+  width: 150px;
+  background: #000;
   border-radius: var(--radius);
   overflow: hidden;
+  box-shadow: var(--shadow);
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.2s ease;
-  scroll-snap-align: start;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.prod-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.8);
 }
 
 .prod-card img {
   width: 100%;
-  height: 200px;
+  height: 210px;
   object-fit: cover;
   display: block;
 }
 
 .prod-card .meta {
   padding: 8px;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   color: var(--text-muted);
 }
 
-.prod-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.4);
+.prod-card .meta strong {
+  display: block;
+  color: var(--text);
 }
 
-/* =========================
-   DETALLE
-========================= */
+/* ============================================
+   DETALLE DE PRODUCCIÓN
+============================================ */
 .detail {
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.6), transparent);
-  padding: 18px;
-  border-radius: 8px;
-}
-
-.detail h2 {
-  margin-top: 0;
-}
-
-.link {
-  color: var(--accent);
-  cursor: pointer;
-  text-decoration: underline;
-}
-
-/* =========================
-   CATEGORÍA SELECCIONADA
-========================= */
-.category-selected {
-  padding: 20px;
-}
-
-.selected-category-title {
-  margin: 0 0 12px 0;
-  font-size: 1.6rem;
-  color: #fff;
-}
-
-.selected-row {
-  gap: 14px;
-  overflow-x: auto;
-  padding-bottom: 6px;
-}
-
-/* =========================
-   FORMULARIOS (UT06)
-========================= */
-form {
   background: var(--card);
   padding: 20px;
   border-radius: var(--radius);
-  max-width: 500px;
+  box-shadow: var(--shadow);
+}
+
+.detail h2 small {
+  font-size: 0.7em;
+  color: var(--text-muted);
+}
+
+.detail p {
+  color: var(--text-muted);
+}
+
+.detail ul {
+  padding-left: 20px;
+}
+
+.detail button {
+  margin-top: 15px;
+  padding: 8px 12px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.detail button:hover {
+  background: var(--accent-hover);
+}
+
+/* Enlaces tipo “link” dentro del detalle */
+.link {
+  color: var(--accent);
+}
+
+.link:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* ============================================
+   FORMULARIOS UT06 / UT07
+============================================ */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--card);
+  padding: 20px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
 }
 
 form label {
-  display: block;
-  margin-top: 12px;
   font-size: 0.9rem;
   color: var(--text-muted);
 }
 
 form input,
 form select {
-  width: 100%;
   padding: 8px;
-  margin-top: 6px;
-  border-radius: var(--radius);
   border: 1px solid #333;
-  background: #0d0d0d;
+  border-radius: 4px;
+  background: #000;
   color: var(--text);
 }
 
+form input::placeholder {
+  color: #555;
+}
+
 form button {
-  margin-top: 18px;
-  padding: 10px 14px;
+  padding: 10px;
   background: var(--accent);
+  color: #fff;
   border: none;
-  border-radius: var(--radius);
-  color: white;
-  cursor: pointer;
+  border-radius: 4px;
   font-weight: bold;
-  transition: background 0.2s ease;
+  margin-top: 5px;
+  transition: background 0.2s;
 }
 
 form button:hover {
-  background: #b20710;
+  background: var(--accent-hover);
 }
 
 #form-msg {
-  margin-top: 12px;
+  margin-top: 10px;
   font-weight: bold;
 }
 
-/* =========================
-   RESPONSIVE
-========================= */
-@media (max-width: 768px) {
-  .topbar {
-    flex-direction: column;
-    align-items: flex-start;
-  }
+/* ============================================
+   LOGIN
+============================================ */
+.login-box {
+  background: var(--card);
+  padding: 20px;
+  width: 260px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  display: none;
+  z-index: 1000;
+}
 
-  .main-nav .nav-link {
-    margin-left: 0;
-    margin-right: 12px;
+.login-box h3 {
+  margin-bottom: 10px;
+  color: var(--text);
+}
+
+.login-box input {
+  width: 100%;
+}
+
+.user-info {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: #000;
+  color: #fff;
+  padding: 10px 15px;
+  border-radius: var(--radius);
+  display: none;
+  box-shadow: var(--shadow);
+  z-index: 1000;
+}
+
+.user-info button {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 5px 8px;
+  border-radius: 4px;
+  margin-left: 10px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.user-info button:hover {
+  background: var(--accent-hover);
+}
+
+/* ============================================
+   COOKIE BANNER
+============================================ */
+.cookie-banner {
+  background: #000;
+  color: #fff;
+  padding: 15px;
+  text-align: center;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  display: none;
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.8);
+  z-index: 999;
+}
+
+.cookie-banner button {
+  margin-left: 10px;
+  padding: 6px 10px;
+  background: var(--accent);
+  border: none;
+  color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.cookie-banner button:hover {
+  background: var(--accent-hover);
+}
+
+/* ============================================
+   MAPAS (Leaflet)
+============================================ */
+#map-create,
+#map-detail,
+#map-all {
+  width: 100%;
+  height: 350px;
+  margin-top: 15px;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+/* ============================================
+   FAVORITOS
+============================================ */
+.fav-btn {
+  background: var(--accent);
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 4px;
+  border: none;
+  margin-top: 10px;
+  font-weight: bold;
+  transition: background 0.2s;
+  cursor: pointer;
+}
+
+.fav-btn:hover {
+  background: var(--accent-hover);
+}
+
+/* ============================================
+   RESPONSIVE
+============================================ */
+@media (max-width: 768px) {
+  #categories-home {
+    justify-content: center;
   }
 
   .prod-card {
-    min-width: 130px;
+    width: 45%;
+  }
+
+  .login-box, .user-info {
+    right: 10px;
+  }
+
+  .main-nav {
+    gap: 8px;
   }
 }

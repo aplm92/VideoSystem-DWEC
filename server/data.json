@@ -1,0 +1,91 @@
+{
+  "categories": [
+    { "name": "Acción", "description": "Películas de acción" },
+    { "name": "Drama", "description": "Dramas intensos" },
+    { "name": "Comedia", "description": "Risas aseguradas" }
+  ],
+
+  "directors": [
+    { "name": "James", "lastname1": "Cameron", "born": "1954-08-16" },
+    { "name": "Patty", "lastname1": "Jenkins", "born": "1971-07-24" },
+    { "name": "Greta", "lastname1": "Gerwig", "born": "1983-09-04" }
+  ],
+
+  "actors": [
+    { "name": "Chris", "lastname1": "Evans", "born": "1981-07-13" },
+    { "name": "Scarlett", "lastname1": "Johansson", "born": "1984-12-22" },
+    { "name": "Tom", "lastname1": "Hanks", "born": "1956-07-09" },
+    { "name": "Emma", "lastname1": "Stone", "born": "1988-12-06" },
+    { "name": "Ryan", "lastname1": "Gosling", "born": "1980-12-12" },
+    { "name": "Zendaya", "lastname1": "Coleman", "born": "1996-10-01" }
+  ],
+
+  "productions": [
+    { "title": "Furia Roja", "year": 2020, "lat": 40.4, "lng": -3.7 },
+    { "title": "Noche Eterna", "year": 2019, "lat": 41.4, "lng": -0.9 },
+    { "title": "Riesgo Mortal", "year": 2021, "lat": 39.5, "lng": -0.4 },
+    { "title": "Último Asalto", "year": 2018, "lat": 37.3, "lng": -5.9 },
+
+    { "title": "Lágrimas", "year": 2017, "lat": 43.3, "lng": -8.4 },
+    { "title": "Camino", "year": 2016, "lat": 42.8, "lng": -1.6 },
+    { "title": "Horizonte", "year": 2015, "lat": 36.7, "lng": -4.4 },
+    { "title": "El Peso", "year": 2014, "lat": 40.9, "lng": -4.1 },
+
+    { "title": "Risas en la Ciudad", "year": 2022, "lat": 40.4, "lng": -3.7 },
+    { "title": "Bromas", "year": 2020, "lat": 41.1, "lng": -1.2 },
+    { "title": "Plan A", "year": 2019, "lat": 39.0, "lng": -1.9 },
+    { "title": "Vacaciones", "year": 2018, "lat": 38.7, "lng": -0.5 }
+  ],
+
+  "assignments": {
+    "categories": [
+      { "category": "Acción", "productions": ["Furia Roja", "Noche Eterna", "Riesgo Mortal", "Último Asalto"] },
+      { "category": "Drama", "productions": ["Lágrimas", "Camino", "Horizonte", "El Peso"] },
+      { "category": "Comedia", "productions": ["Risas en la Ciudad", "Bromas", "Plan A", "Vacaciones"] }
+    ],
+
+    "actors": [
+      { "actor": { "name": "Chris", "lastname1": "Evans" }, "production": "Furia Roja", "role": "Protagonista" },
+      { "actor": { "name": "Scarlett", "lastname1": "Johansson" }, "production": "Furia Roja", "role": "Secundario" },
+
+      { "actor": { "name": "Tom", "lastname1": "Hanks" }, "production": "Noche Eterna", "role": "Protagonista" },
+      { "actor": { "name": "Emma", "lastname1": "Stone" }, "production": "Noche Eterna", "role": "Secundario" },
+
+      { "actor": { "name": "Ryan", "lastname1": "Gosling" }, "production": "Riesgo Mortal", "role": "Protagonista" },
+      { "actor": { "name": "Zendaya", "lastname1": "Coleman" }, "production": "Riesgo Mortal", "role": "Secundario" },
+
+      { "actor": { "name": "Chris", "lastname1": "Evans" }, "production": "Último Asalto", "role": "Protagonista" },
+      { "actor": { "name": "Scarlett", "lastname1": "Johansson" }, "production": "Último Asalto", "role": "Secundario" },
+
+      { "actor": { "name": "Tom", "lastname1": "Hanks" }, "production": "Lágrimas", "role": "Protagonista" },
+      { "actor": { "name": "Emma", "lastname1": "Stone" }, "production": "Lágrimas", "role": "Secundario" },
+
+      { "actor": { "name": "Ryan", "lastname1": "Gosling" }, "production": "Camino", "role": "Protagonista" },
+      { "actor": { "name": "Zendaya", "lastname1": "Coleman" }, "production": "Camino", "role": "Secundario" },
+
+      { "actor": { "name": "Chris", "lastname1": "Evans" }, "production": "Horizonte", "role": "Protagonista" },
+      { "actor": { "name": "Scarlett", "lastname1": "Johansson" }, "production": "Horizonte", "role": "Secundario" },
+
+      { "actor": { "name": "Tom", "lastname1": "Hanks" }, "production": "El Peso", "role": "Protagonista" },
+      { "actor": { "name": "Emma", "lastname1": "Stone" }, "production": "El Peso", "role": "Secundario" },
+
+      { "actor": { "name": "Ryan", "lastname1": "Gosling" }, "production": "Risas en la Ciudad", "role": "Protagonista" },
+      { "actor": { "name": "Zendaya", "lastname1": "Coleman" }, "production": "Risas en la Ciudad", "role": "Secundario" },
+
+      { "actor": { "name": "Chris", "lastname1": "Evans" }, "production": "Bromas", "role": "Protagonista" },
+      { "actor": { "name": "Scarlett", "lastname1": "Johansson" }, "production": "Bromas", "role": "Secundario" },
+
+      { "actor": { "name": "Tom", "lastname1": "Hanks" }, "production": "Plan A", "role": "Protagonista" },
+      { "actor": { "name": "Emma", "lastname1": "Stone" }, "production": "Plan A", "role": "Secundario" },
+
+      { "actor": { "name": "Ryan", "lastname1": "Gosling" }, "production": "Vacaciones", "role": "Protagonista" },
+      { "actor": { "name": "Zendaya", "lastname1": "Coleman" }, "production": "Vacaciones", "role": "Secundario" }
+    ],
+
+    "directors": [
+      { "director": { "name": "James", "lastname1": "Cameron" }, "productions": ["Furia Roja", "Noche Eterna", "Lágrimas"] },
+      { "director": { "name": "Patty", "lastname1": "Jenkins" }, "productions": ["Riesgo Mortal", "Último Asalto", "Camino"] },
+      { "director": { "name": "Greta", "lastname1": "Gerwig" }, "productions": ["Horizonte", "El Peso", "Risas en la Ciudad"] }
+    ]
+  }
+}

@@ -1,15 +1,14 @@
-/* Alberto Pérez López-Menchero
-   DWEC 06 - VideoSystemApp.js
+/* ============================================================
+   VideoSystemApp.js — UT07 COMPLETO
+   Alberto Pérez López-Menchero
    Controlador principal de la aplicación.
-   Gestión de navegación, formularios UT06, ventanas emergentes y manejo del historial.
-*/
+============================================================ */
 
 import { Model } from './VideoSystemModel.js';
 import { View } from './VideoSystemView.js';
-import { Movie } from './entities/Movie.js';   // ← IMPORTACIÓN NECESARIA
+import { Movie } from './entities/Movie.js';
 import { Person } from './entities/Person.js';
 import { Category } from './entities/Category.js';
-
 
 /* ============================
    ESTADO GLOBAL
@@ -18,6 +17,148 @@ const state = {
   vs: null,
   openWindows: []
 };
+
+/* ============================
+   COOKIES
+============================ */
+function setCookie(name, value, days = 7) {
+  const d = new Date();
+  d.setTime(d.getTime() + days * 24 * 60 * 60 * 1000);
+  document.cookie = `${name}=${value};expires=${d.toUTCString()};path=/`;
+}
+
+function getCookie(name) {
+  const c = document.cookie.split("; ").find(row => row.startsWith(name + "="));
+  return c ? c.split("=")[1] : null;
+}
+
+function deleteCookie(name) {
+  document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/`;
+}
+
+/* ============================
+   BANNER COOKIES
+============================ */
+function initCookies() {
+  if (!getCookie("cookiesAccepted")) {
+    const banner = document.getElementById("cookie-banner");
+    banner.style.display = "block";
+
+    document.getElementById("accept-cookies").onclick = () => {
+      setCookie("cookiesAccepted", "yes");
+      banner.style.display = "none";
+    };
+  }
+}
+
+/* ============================
+   LOGIN / LOGOUT
+============================ */
+function initLogin() {
+  const loginBox = document.getElementById("login-box");
+  const userInfo = document.getElementById("user-info");
+  const adminOptions = document.getElementById("admin-options");
+
+  const logged = getCookie("userLogged");
+
+  if (logged) {
+    loginBox.style.display = "none";
+    userInfo.style.display = "block";
+    userInfo.innerHTML = `Hola ${logged} <button id="logout-btn">Salir</button>`;
+
+    adminOptions.style.display = "block";
+
+    document.getElementById("logout-btn").onclick = () => {
+      deleteCookie("userLogged");
+      location.reload();
+    };
+
+    return;
+  }
+
+  loginBox.style.display = "block";
+  userInfo.style.display = "none";
+  adminOptions.style.display = "none";
+
+  document.getElementById("login-form").addEventListener("submit", e => {
+    e.preventDefault();
+    const u = document.getElementById("login-user").value;
+    const p = document.getElementById("login-pass").value;
+
+    if (u === "admin" && p === "admin") {
+      setCookie("userLogged", "admin");
+      location.reload();
+    } else {
+      alert("Credenciales incorrectas");
+    }
+  });
+}
+
+/* ============================
+   FAVORITOS (LocalStorage)
+============================ */
+function toggleFavorite(title) {
+  let favs = JSON.parse(localStorage.getItem("favorites") || "[]");
+
+  if (!favs.includes(title)) {
+    favs.push(title);
+  }
+
+  localStorage.setItem("favorites", JSON.stringify(favs));
+  alert("Añadido a favoritos");
+}
+
+function handleShowFavorites() {
+  const favs = JSON.parse(localStorage.getItem("favorites") || "[]");
+  const prods = favs
+    .map(t => state.vs.createProduction(t))
+    .filter(p => p);
+
+  View.renderFavorites(prods);
+  activateAllBinds();
+}
+
+/* ============================
+   CARGA INICIAL DESDE JSON
+============================ */
+async function loadInitialData() {
+  const data = await Model.createInitialData();
+  state.vs = data.vs;
+}
+
+/* ============================
+   BACKUP JSON AL SERVIDOR
+============================ */
+async function createBackup() {
+  const data = JSON.stringify(state.vs.exportData(), null, 2);
+
+  const res = await fetch("server/writeJSONBackup.php", {
+    method: "POST",
+    body: data
+  });
+
+  const txt = await res.text();
+  if (txt === "OK") alert("Backup creado correctamente");
+  else alert("Error al crear backup");
+}
+
+/* ============================
+   MAPA GLOBAL
+============================ */
+function handleShowMapAll() {
+  View.renderMapAll();
+
+  const map = L.map("map-all").setView([40.4, -3.7], 6);
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
+
+  for (const p of state.vs.productions) {
+    if (p.lat && p.lng) {
+      L.marker([p.lat, p.lng])
+        .addTo(map)
+        .bindPopup(`<strong>${p.title}</strong>`);
+    }
+  }
+}
 
 /* ============================
    ACTIVAR BINDS TRAS CADA RENDER
@@ -31,6 +172,11 @@ function activateAllBinds() {
   View.bindShowActor(handleShowActor);
   View.bindShowDirector(handleShowDirector);
 
+  // UT07
+  View.bindShowFavorites(handleShowFavorites);
+  View.bindShowBackup(createBackup);
+  View.bindShowMapAll(handleShowMapAll);
+
   // UT06
   View.bindShowCreateProduction(handleShowCreateProduction);
   View.bindShowDeleteProduction(handleShowDeleteProduction);
@@ -38,25 +184,22 @@ function activateAllBinds() {
 }
 
 /* ============================
-   HANDLER: INICIO
+   INICIO
 ============================ */
 function handleInit() {
-  if (!state.vs) {
-    const data = Model.createInitialData();
-    state.vs = data.vs;
-  }
-
   const cats = Array.from(state.vs.categories);
   View.renderCategories(cats);
+// NO mostrar películas dentro de cada categoría en el inicio
+/*
+document.querySelectorAll('#categories-home .category-card').forEach(card => {
+  const name = card.querySelector('.category-title').textContent;
+  const cat = cats.find(c => c.name === name);
+  const prods = Array.from(state.vs.getProductionsCategory(cat));
+  const row = View.renderProductionsRow(prods.slice(0, 6));
+  card.appendChild(row);
+});
+*/
 
-  // Pintar producciones en cada categoría (home)
-  document.querySelectorAll('#categories-home .category-card').forEach(card => {
-    const name = card.querySelector('.category-title').textContent;
-    const cat = cats.find(c => c.name === name);
-    const prods = Array.from(state.vs.getProductionsCategory(cat));
-    const row = View.renderProductionsRow(prods.slice(0, 6));
-    card.appendChild(row);
-  });
 
   showRandomProductions(3);
   activateAllBinds();
@@ -77,12 +220,6 @@ function showRandomProductions(n) {
   const row = View.renderProductionsRow(shuffled);
   document.getElementById('center').appendChild(row);
 
-  activateAllBinds();
-}
-
-function refreshCategoriesMenu() {
-  const cats = Array.from(state.vs.categories);
-  View.renderCategories(cats);
   activateAllBinds();
 }
 
@@ -112,119 +249,68 @@ function handleShowProduction(title) {
   }
 
   View.renderProductionDetail(prod, cast, directors);
+
+  // Abrir ventana
   View.bindOpenWindow(() => openDetailWindow(prod));
+
+  // Favoritos
+  const favBtn = document.getElementById("fav-btn");
+  if (favBtn) favBtn.onclick = () => toggleFavorite(prod.title);
+
+  // Mapa detalle
+  if (prod.lat && prod.lng) {
+    const map = L.map("map-detail").setView([prod.lat, prod.lng], 10);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
+    L.marker([prod.lat, prod.lng]).addTo(map);
+  }
 
   activateAllBinds();
 }
 
 /* ============================
-   LISTADO DE ACTORES / DIRECTORES
+   LISTADO ACTORES / DIRECTORES
 ============================ */
 function handleShowActors() {
-  View.clearCenter();
-  const container = document.createElement('div');
-  container.innerHTML = '<h2>Actores</h2>';
-
-  for (const a of state.vs.actors) {
-    const p = document.createElement('p');
-    p.innerHTML = `<span class="link" data-actor="${a.name} ${a.lastname1}">${a.name} ${a.lastname1}</span>`;
-    container.appendChild(p);
-  }
-
-  document.getElementById('center').appendChild(container);
+  View.renderActors(state.vs.actors);
   activateAllBinds();
 }
 
 function handleShowDirectors() {
-  View.clearCenter();
-  const container = document.createElement('div');
-  container.innerHTML = '<h2>Directores</h2>';
-
-  for (const d of state.vs.directors) {
-    const p = document.createElement('p');
-    p.innerHTML = `<span class="link" data-director="${d.name} ${d.lastname1}">${d.name} ${d.lastname1}</span>`;
-    container.appendChild(p);
-  }
-
-  document.getElementById('center').appendChild(container);
+  View.renderDirectors(state.vs.directors);
   activateAllBinds();
 }
 
 /* ============================
-   DETALLE DE ACTOR / DIRECTOR
+   DETALLE ACTOR / DIRECTOR
 ============================ */
 function handleShowActor(actorString) {
   const [name, lastname] = actorString.split(' ');
   let actor = state.vs.createPerson(name, lastname);
-    if (!actor) {
-      actor = new Person(name, lastname, new Date(1980, 0, 1));
-      state.vs.addActor(actor);
-    }
 
-
-  View.clearCenter();
-  const div = document.createElement('div');
-
-  div.innerHTML = `
-    <h2>${actor.name} ${actor.lastname1}</h2>
-    <button id="open-window-actor">Abrir en ventana</button>
-    <h3>Filmografía</h3>
-  `;
-
-  const ul = document.createElement('ul');
-
-  for (const obj of state.vs.getProductionsActor(actor)) {
-    const li = document.createElement('li');
-    li.innerHTML = `<span class="link" data-prod="${obj.production.title}">${obj.production.title}</span> — ${obj.role}`;
-    ul.appendChild(li);
+  if (!actor) {
+    actor = new Person(name, lastname, new Date(1980, 0, 1));
+    state.vs.addActor(actor);
   }
 
-  div.appendChild(ul);
-  document.getElementById('center').appendChild(div);
-
+  View.renderActorDetail(actor, state.vs.getProductionsActor(actor));
   activateAllBinds();
-
-  document.getElementById('open-window-actor')
-    .addEventListener('click', () => openActorWindow(actor));
 }
 
 function handleShowDirector(directorString) {
   const [name, lastname] = directorString.split(' ');
-  let directorObj = state.vs.createPerson(name, lastname);
-    if (!directorObj) {
-      directorObj = new Person(name, lastname, new Date(1980, 0, 1));
-      state.vs.addDirector(directorObj);
-    }
+  let director = state.vs.createPerson(name, lastname);
 
-
-  View.clearCenter();
-  const div = document.createElement('div');
-
-  div.innerHTML = `
-    <h2>${director.name} ${director.lastname1}</h2>
-    <button id="open-window-director">Abrir en ventana</button>
-    <h3>Filmografía</h3>
-  `;
-
-  const ul = document.createElement('ul');
-
-  for (const p of state.vs.getProductionsDirector(director)) {
-    const li = document.createElement('li');
-    li.innerHTML = `<span class="link" data-prod="${p.title}">${p.title}</span>`;
-    ul.appendChild(li);
+  if (!director) {
+    director = new Person(name, lastname, new Date(1980, 0, 1));
+    state.vs.addDirector(director);
   }
 
-  div.appendChild(ul);
-  document.getElementById('center').appendChild(div);
-
+  View.renderDirectorDetail(director, state.vs.getProductionsDirector(director));
   activateAllBinds();
-
-  document.getElementById('open-window-director')
-    .addEventListener('click', () => openDirectorWindow(director));
 }
 
 /* ============================
-   FORMULARIO: CREAR PRODUCCIÓN
+   FORMULARIO CREAR PRODUCCIÓN
 ============================ */
 function handleShowCreateProduction() {
   const dirs = Array.from(state.vs.directors);
@@ -232,6 +318,18 @@ function handleShowCreateProduction() {
   const cats = Array.from(state.vs.categories);
 
   View.renderCreateProductionForm(dirs, acts, cats);
+
+  // Mapa selección
+  const map = L.map("map-create").setView([40.4, -3.7], 6);
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
+
+  let marker;
+  map.on("click", e => {
+    if (marker) marker.remove();
+    marker = L.marker(e.latlng).addTo(map);
+    document.getElementById("prod-lat").value = e.latlng.lat;
+    document.getElementById("prod-lng").value = e.latlng.lng;
+  });
 
   document.getElementById("form-create-prod")
     .addEventListener("submit", handleCreateProductionSubmit);
@@ -242,6 +340,9 @@ function handleCreateProductionSubmit(event) {
 
   const title = document.getElementById("prod-title").value.trim();
   const year = parseInt(document.getElementById("prod-year").value);
+
+  const lat = parseFloat(document.getElementById("prod-lat").value);
+  const lng = parseFloat(document.getElementById("prod-lng").value);
 
   const directorName = document.getElementById("prod-director").value;
   const newDirector = document.getElementById("prod-director-new").value.trim();
@@ -257,6 +358,8 @@ function handleCreateProductionSubmit(event) {
   }
 
   const prod = new Movie(title, new Date(year, 0, 1));
+  prod.lat = lat;
+  prod.lng = lng;
 
   try {
     state.vs.addProduction(prod);
@@ -266,7 +369,7 @@ function handleCreateProductionSubmit(event) {
 
     if (newDirector) {
       const [n, l] = newDirector.split(" ");
-      directorObj = new Person(n, l, new Date(1980, 0, 1)); // fecha dummy
+      directorObj = new Person(n, l, new Date(1980, 0, 1));
       state.vs.addDirector(directorObj);
     } else {
       const [n, l] = directorName.split(" ");
@@ -301,7 +404,6 @@ function handleCreateProductionSubmit(event) {
       const cat = new Category(c);
       state.vs.addCategory(cat);
       state.vs.assignCategory(cat, prod);
-      refreshCategoriesMenu();
     }
 
     showMessage("form-msg", "Producción creada correctamente", "success");
@@ -311,9 +413,8 @@ function handleCreateProductionSubmit(event) {
   }
 }
 
-
 /* ============================
-   FORMULARIO: ELIMINAR PRODUCCIÓN
+   FORMULARIO ELIMINAR PRODUCCIÓN
 ============================ */
 function handleShowDeleteProduction() {
   const prods = Array.from(state.vs.productions);
@@ -345,15 +446,15 @@ function handleDeleteProductionSubmit(event) {
 }
 
 /* ============================
-   FORMULARIO: ASIGNAR / DESASIGNAR
+   FORMULARIO ASIGNAR / DESASIGNAR
 ============================ */
 function handleShowAssign() {
   const prods = Array.from(state.vs.productions);
   const acts = Array.from(state.vs.actors);
   const dirs = Array.from(state.vs.directors);
-  const cats = Array.from(state.vs.categories);   // ← NUEVO
+  const cats = Array.from(state.vs.categories);
 
-  View.renderAssignForm(prods, acts, dirs, cats); // ← PASAR cats
+  View.renderAssignForm(prods, acts, dirs, cats);
 
   document.getElementById("assign-prod")
     .addEventListener("change", loadAssignedData);
@@ -429,7 +530,7 @@ function handleAssignSubmit(event) {
 
   try {
 
-    /* ===== ASIGNAR ACTORES EXISTENTES ===== */
+        /* ===== ASIGNAR ACTORES EXISTENTES ===== */
     for (const a of assignActors) {
       const [n, l] = a.split(" ");
       let actor = state.vs.createPerson(n, l);
@@ -492,7 +593,6 @@ function handleAssignSubmit(event) {
       const cat = new Category(c);
       state.vs.addCategory(cat);
       state.vs.assignCategory(cat, prod);
-      refreshCategoriesMenu();
     }
 
     showMessage("form-msg", "Cambios aplicados correctamente", "success");
@@ -605,7 +705,9 @@ const historyActions = {
   showActors: () => handleShowActors(),
   showDirectors: () => handleShowDirectors(),
   showActor: event => handleShowActor(event.state.actor),
-  showDirector: event => handleShowDirector(event.state.director)
+  showDirector: event => handleShowDirector(event.state.director),
+  favorites: () => handleShowFavorites(),
+  mapAll: () => handleShowMapAll()
 };
 
 window.addEventListener('popstate', event => {
@@ -617,7 +719,12 @@ window.addEventListener('popstate', event => {
 /* ============================
    ARRANQUE
 ============================ */
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  initCookies();
+  initLogin();
+
+  await loadInitialData();
+
   history.replaceState({ action: 'init' }, null);
   handleInit();
 });

@@ -1,9 +1,8 @@
-/* Alberto Pérez López-Menchero
-   DWEC 06 - VideoSystemView.js
-   Funciones de renderizado, gestión del DOM, etc.
-   Se añade formulario de creación y eliminación de producciones, 
-   asignación/desasignación de actores y directores.
-*/
+/* ============================================================
+   VideoSystemView.js — UT07 COMPLETO
+   Alberto Pérez López-Menchero
+   Renderizado del DOM, formularios, mapas y binds.
+============================================================ */
 
 const EXCECUTE_HANDLER = Symbol('executeHandler');
 
@@ -105,11 +104,16 @@ export const View = (() => {
         <h2>${prod.title} <small>${prod.publication ? new Date(prod.publication).getFullYear() : ''}</small></h2>
         <p>${prod.synopsis || ''}</p>
 
+        <button id="fav-btn" class="fav-btn">⭐ Añadir a favoritos</button>
+
         <h4>Reparto</h4>
         <ul id="cast-list"></ul>
 
         <h4>Directores</h4>
         <ul id="dir-list"></ul>
+
+        <h4>Localización</h4>
+        <div id="map-detail"></div>
 
         <button id="open-window">Abrir en ventana</button>
       `;
@@ -178,6 +182,107 @@ export const View = (() => {
     },
 
     /* ============================
+       FAVORITOS
+    ============================ */
+    renderFavorites(productions) {
+      this.clearCenter();
+
+      const h = document.createElement("h2");
+      h.textContent = "Favoritos";
+      center.appendChild(h);
+
+      const row = this.renderProductionsRow(productions);
+      center.appendChild(row);
+    },
+
+    /* ============================
+       MAPA GLOBAL
+    ============================ */
+    renderMapAll() {
+      this.clearCenter();
+      center.innerHTML = `
+        <h2>Mapa de Producciones</h2>
+        <div id="map-all"></div>
+      `;
+    },
+
+    /* ============================
+       LISTADOS ACTORES / DIRECTORES
+    ============================ */
+    renderActors(actors) {
+      this.clearCenter();
+      const container = document.createElement('div');
+      container.innerHTML = '<h2>Actores</h2>';
+
+      for (const a of actors) {
+        const p = document.createElement('p');
+        p.innerHTML = `<span class="link" data-actor="${a.name} ${a.lastname1}">${a.name} ${a.lastname1}</span>`;
+        container.appendChild(p);
+      }
+
+      center.appendChild(container);
+    },
+
+    renderDirectors(directors) {
+      this.clearCenter();
+      const container = document.createElement('div');
+      container.innerHTML = '<h2>Directores</h2>';
+
+      for (const d of directors) {
+        const p = document.createElement('p');
+        p.innerHTML = `<span class="link" data-director="${d.name} ${d.lastname1}">${d.name} ${d.lastname1}</span>`;
+        container.appendChild(p);
+      }
+
+      center.appendChild(container);
+    },
+
+    /* ============================
+       DETALLE ACTOR / DIRECTOR
+    ============================ */
+    renderActorDetail(actor, productions) {
+      this.clearCenter();
+
+      const div = document.createElement('div');
+      div.innerHTML = `
+        <h2>${actor.name} ${actor.lastname1}</h2>
+        <h3>Filmografía</h3>
+      `;
+
+      const ul = document.createElement('ul');
+
+      for (const obj of productions) {
+        const li = document.createElement('li');
+        li.innerHTML = `<span class="link" data-prod="${obj.production.title}">${obj.production.title}</span> — ${obj.role}`;
+        ul.appendChild(li);
+      }
+
+      div.appendChild(ul);
+      center.appendChild(div);
+    },
+
+    renderDirectorDetail(director, productions) {
+      this.clearCenter();
+
+      const div = document.createElement('div');
+      div.innerHTML = `
+        <h2>${director.name} ${director.lastname1}</h2>
+        <h3>Filmografía</h3>
+      `;
+
+      const ul = document.createElement('ul');
+
+      for (const p of productions) {
+        const li = document.createElement('li');
+        li.innerHTML = `<span class="link" data-prod="${p.title}">${p.title}</span>`;
+        ul.appendChild(li);
+      }
+
+      div.appendChild(ul);
+      center.appendChild(div);
+    },
+
+    /* ============================
        FORMULARIO: CREAR PRODUCCIÓN
     ============================ */
     renderCreateProductionForm(directors, actors, categories) {
@@ -219,6 +324,12 @@ export const View = (() => {
           <label>Nuevas categorías (separadas por coma)</label>
           <input type="text" id="prod-categories-new" placeholder="Ej: Terror, Suspense">
 
+          <!-- MAPA -->
+          <label>Localización</label>
+          <div id="map-create"></div>
+          <input type="text" id="prod-lat" placeholder="Latitud" readonly>
+          <input type="text" id="prod-lng" placeholder="Longitud" readonly>
+
           <button type="submit">Crear</button>
         </form>
 
@@ -250,7 +361,6 @@ export const View = (() => {
     /* ============================
        FORMULARIO: ASIGNAR / DESASIGNAR
     ============================ */
-
     renderAssignForm(productions, actors, directors, categories) {
       center.innerHTML = `
         <h2>Asignar / Desasignar</h2>
@@ -308,7 +418,7 @@ export const View = (() => {
     },
 
     /* ============================
-       BINDS
+       BINDS UT06 + UT07
     ============================ */
     bindOpenWindow(handler) {
       const btn = document.getElementById('open-window');
@@ -403,21 +513,75 @@ export const View = (() => {
       });
     },
 
+    /* ============================
+       BINDS UT07
+    ============================ */
+    bindShowFavorites(handler) {
+      document.querySelectorAll('[data-route="favorites"]').forEach(el => {
+        el.addEventListener('click', event => {
+          this[EXCECUTE_HANDLER](
+            handler,
+            [],
+            '#center',
+            { action: 'favorites' },
+            '/favorites',
+            event
+          );
+        });
+      });
+    },
+
+    bindShowBackup(handler) {
+      document.querySelectorAll('[data-route="backup"]').forEach(el => {
+        el.addEventListener('click', event => {
+          handler();
+          event.preventDefault();
+        });
+      });
+    },
+
+    bindShowMapAll(handler) {
+      document.querySelectorAll('[data-route="map-all"]').forEach(el => {
+        el.addEventListener('click', event => {
+          this[EXCECUTE_HANDLER](
+            handler,
+            [],
+            '#center',
+            { action: 'mapAll' },
+            '/map-all',
+            event
+          );
+        });
+      });
+    },
+
+        /* ============================
+       BINDS UT06
+    ============================ */
     bindShowCreateProduction(handler) {
       document.querySelectorAll('[data-route="create-production"]').forEach(el => {
-        el.addEventListener('click', handler);
+        el.addEventListener('click', event => {
+          handler(event);
+          event.preventDefault();
+        });
       });
     },
 
     bindShowDeleteProduction(handler) {
       document.querySelectorAll('[data-route="delete-production"]').forEach(el => {
-        el.addEventListener('click', handler);
+        el.addEventListener('click', event => {
+          handler(event);
+          event.preventDefault();
+        });
       });
     },
 
     bindShowAssign(handler) {
       document.querySelectorAll('[data-route="assign"]').forEach(el => {
-        el.addEventListener('click', handler);
+        el.addEventListener('click', event => {
+          handler(event);
+          event.preventDefault();
+        });
       });
     }
 
